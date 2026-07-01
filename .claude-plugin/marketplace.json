@@ -1,0 +1,14 @@
+{
+  "name": "undercurrent-analytics-skills",
+  "owner": {
+    "name": "Undercurrent Analytics"
+  },
+  "description": "Skills for working with Undercurrent Analytics tooling.",
+  "plugins": [
+    {
+      "name": "undercurrent-analytics-grafana-dashboards",
+      "source": "./plugins/undercurrent-analytics-grafana-dashboards",
+      "description": "Create and edit Grafana analytics dashboards for the Undercurrent Analytics mobile app."
+    }
+  ]
+}
