@@ -6,12 +6,13 @@ Analytics projects.
 ## Adding this marketplace
 
 ```
-/plugin marketplace add <path-or-url-to-this-repo>
+/plugin marketplace add https://github.com/undercurrentanalytics-dev/skills
 ```
 
-## Available plugins
+## Available skills
 
 - **undercurrent-analytics-grafana-dashboards** - Create and edit Grafana
-  analytics dashboards for the Undercurrent Analytics mobile app: finding
-  registered analytics events, writing SQL against the tracking events
-  table, and deploying dashboards via the Grafana HTTP API.
+  dashboards to surface insights based on the analytics events included in your app.
+  Covers how to write SQL in the correct dialect (Cloudflare R2 SQL) and how to interact
+  with the Grafana HTTP API at https://grafana.undercurrentanalytics.dev.
+
