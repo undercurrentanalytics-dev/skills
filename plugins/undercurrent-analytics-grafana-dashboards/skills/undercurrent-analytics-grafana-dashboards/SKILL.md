@@ -1,14 +1,20 @@
 ---
 name: undercurrent-analytics-grafana-dashboards
-description: Create and edit Grafana analytics dashboards for Undercurrent Analytics, a mobile analytics service. Use when asked to build or update Grafana dashboards/panels, write SQL against the Undercurrent Analytics tracking events table, or call the Grafana HTTP API for this project.
+description: Create, edit or delete usage analytics dashboards at https://grafana.undercurrentanalytics.dev. Use when asked to build, update, or delete dashboards/panels for Grafana or Undercurrent Analytics, or query usage analytics data in SQL.
 ---
 
 Undercurrent Analytics is a mobile analytics service that uses Grafana for
 analytics dashboards. There is an Undercurrent Analytics credentials JSON
-file somewhere in the current repo, containing a Grafana Service Account
-token with Editor permissions, and the login/password credentials for a
+file in the current repo, containing a Grafana Service Account
+token with Admin permissions, and the username/password credentials for a
 Grafana org admin, which you can use to interact with Grafana over the HTTP
-API.
+API. Using the Grafana HTTP API, you can create, edit or delete usage analytics dashboards, as well as run queries against the default datasource.
+
+## Authenticating with the Grafana HTTP API
+
+Find the Undercurrent Analytics credentials JSON file in the repo. If you
+can't find it, stop here and report that you need it in order to use the Grafana HTTP API to create or edit dashboards, or to run SQL queries against the usage analytics data. If you do find it, ensure it is ignored by version control and
+not checked in.
 
 ## Finding the app's registered analytics events
 
@@ -18,7 +24,7 @@ need to be registered before dashboards can be created for them.
 
 ## Writing SQL queries for Undercurrent Analytics
 
-### The tracking events table: `$__table`
+### The analytics events table: `$__table`
 
 During query execution, `$__table` is expanded into a view that is already
 filtered to show only the relevant data, so:
@@ -87,22 +93,14 @@ ORDER BY date_trunc('hour', time)
 
 ## Creating Grafana dashboards via the HTTP API
 
-### Authentication
-
-Find the Undercurrent Analytics credentials JSON file in the repo. If you
-can't find it, stop here and report that you need it to create the
-dashboards. If you do find it, ensure it is ignored by version control and
-not checked in.
-
 ### Using the HTTP API
 
 Copy `scripts/build_dashboard.py` (bundled with this skill) into the target
 repo somewhere untracked, and edit the copy to fill in the configuration and
 panels for the dashboard(s) being built. Don't add the edited
 `build_dashboard.py` to version control - either ignore it, or put it
-somewhere that is already not tracked by version control. The same goes for
-any other Python-related files that are now present in the repo, such as
-`__pycache__/`.
+somewhere that is already not tracked by version control (such as a scratch space or tmp directory). The same goes for
+any other Python-related files that may become present in the repo after running it, such as `__pycache__/`.
 
 Smoke test the dashboards and panels against the live data source after
 they've been created to ensure that they really work. This is important.
