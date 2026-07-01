@@ -5,8 +5,10 @@ Analytics projects.
 
 ## Adding this marketplace
 
+In Claude Code:
 ```
 /plugin marketplace add https://github.com/undercurrentanalytics-dev/skills
+/reload-plugins
 ```
 
 ## Available skills
