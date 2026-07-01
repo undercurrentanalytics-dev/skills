@@ -1,0 +1,141 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "agentified-r2sql-datasource", "uid": "${DS_UID}" },
+      "type": "table",
+      "id": 1,
+      "title": "Recent events",
+      "description": "Most recent events (newest first). Filter with the Distinct ID and City variables; choose columns with the Fields variable. Column headers are also filterable.",
+      "gridPos": { "h": 24, "w": 24, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "filterable": true,
+            "inspect": true
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "time" },
+            "properties": [
+              { "id": "custom.width", "value": 190 },
+              { "id": "unit", "value": "dateTimeAsIso" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "distinct_id" },
+            "properties": [
+              { "id": "custom.width", "value": 290 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "event" },
+            "properties": [
+              { "id": "custom.width", "value": 280 }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "agentified-r2sql-datasource", "uid": "${DS_UID}" },
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH base AS (\n  SELECT\n    time,\n    event,\n    distinct_id,\n    city,\n    region,\n    os,\n    os_version,\n    model,\n    manufacturer,\n    device_id,\n    carrier,\n    lib_version,\n    radio,\n    wifi,\n    screen_width,\n    screen_height,\n    user_id,\n    app_version_string,\n    app_build_number,\n    had_persisted_distinct_id,\n    mp_country_code,\n    mp_lib,\n    mp_processing_time_ms,\n    mp_event_size,\n    properties\n  FROM $__table\n  WHERE $__timeFilter(time)\n    AND (properties IS NULL OR LENGTH(properties) <= 2000)\n    AND ('(all)' IN (${distinct_id}) OR distinct_id IN (${distinct_id}))\n    AND ('(all)' IN (${city}) OR city IN (${city}))\n)\nSELECT ${fields:doublequote} FROM base ORDER BY \"time\" DESC LIMIT 500"
+        }
+      ]
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": ["events"],
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "distinct_id",
+        "label": "Distinct ID",
+        "description": "Filter events by one or more app installations (distinct_id). Leave '(all)' selected for no filter.",
+        "datasource": { "type": "agentified-r2sql-datasource", "uid": "${DS_UID}" },
+        "definition": "SELECT DISTINCT v AS distinct_id FROM ( SELECT DISTINCT '(all)' AS v FROM $__table WHERE $__timeFilter(time) UNION ALL SELECT distinct_id AS v FROM $__table WHERE $__timeFilter(time) AND distinct_id IS NOT NULL ) ORDER BY v",
+        "query": "SELECT DISTINCT v AS distinct_id FROM ( SELECT DISTINCT '(all)' AS v FROM $__table WHERE $__timeFilter(time) UNION ALL SELECT distinct_id AS v FROM $__table WHERE $__timeFilter(time) AND distinct_id IS NOT NULL ) ORDER BY v",
+        "current": { "text": ["(all)"], "value": ["(all)"] },
+        "options": [],
+        "multi": true,
+        "includeAll": false,
+        "allowCustomValue": true,
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false
+      },
+      {
+        "type": "query",
+        "name": "city",
+        "label": "City",
+        "description": "Filter events by Mixpanel-derived city. Leave '(all)' selected for no filter. (Currently every event has a null city.)",
+        "datasource": { "type": "agentified-r2sql-datasource", "uid": "${DS_UID}" },
+        "definition": "SELECT DISTINCT v AS city FROM ( SELECT DISTINCT '(all)' AS v FROM $__table WHERE $__timeFilter(time) UNION ALL SELECT city AS v FROM $__table WHERE $__timeFilter(time) AND city IS NOT NULL ) ORDER BY v",
+        "query": "SELECT DISTINCT v AS city FROM ( SELECT DISTINCT '(all)' AS v FROM $__table WHERE $__timeFilter(time) UNION ALL SELECT city AS v FROM $__table WHERE $__timeFilter(time) AND city IS NOT NULL ) ORDER BY v",
+        "current": { "text": ["(all)"], "value": ["(all)"] },
+        "options": [],
+        "multi": true,
+        "includeAll": false,
+        "allowCustomValue": true,
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false
+      },
+      {
+        "type": "query",
+        "name": "fields",
+        "label": "Fields",
+        "description": "Choose which columns to show. These are the standard event fields captured for every project.",
+        "datasource": { "type": "agentified-r2sql-datasource", "uid": "${DS_UID}" },
+        "definition": "SELECT DISTINCT field FROM (\n  SELECT DISTINCT 'time' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'event' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'distinct_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'city' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'region' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'os' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'os_version' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'model' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'manufacturer' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'device_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'carrier' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'lib_version' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'radio' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'wifi' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'screen_width' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'screen_height' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'user_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'app_version_string' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'app_build_number' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'had_persisted_distinct_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_country_code' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_lib' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_processing_time_ms' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_event_size' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'properties' AS field FROM $__table WHERE $__timeFilter(time)\n) WHERE field NOT LIKE '$%' ORDER BY field",
+        "query": "SELECT DISTINCT field FROM (\n  SELECT DISTINCT 'time' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'event' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'distinct_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'city' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'region' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'os' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'os_version' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'model' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'manufacturer' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'device_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'carrier' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'lib_version' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'radio' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'wifi' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'screen_width' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'screen_height' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'user_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'app_version_string' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'app_build_number' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'had_persisted_distinct_id' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_country_code' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_lib' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_processing_time_ms' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'mp_event_size' AS field FROM $__table WHERE $__timeFilter(time)\n  UNION ALL SELECT DISTINCT 'properties' AS field FROM $__table WHERE $__timeFilter(time)\n) WHERE field NOT LIKE '$%' ORDER BY field",
+        "current": { "text": ["time", "event", "distinct_id", "properties"], "value": ["time", "event", "distinct_id", "properties"] },
+        "options": [],
+        "multi": true,
+        "includeAll": true,
+        "allowCustomValue": true,
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false
+      }
+    ]
+  },
+  "time": { "from": "now-30d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Events",
+  "uid": null,
+  "version": 1,
+  "weekStart": ""
+}

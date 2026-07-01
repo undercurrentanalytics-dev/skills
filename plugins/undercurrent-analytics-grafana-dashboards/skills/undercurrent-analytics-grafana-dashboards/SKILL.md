@@ -1,6 +1,6 @@
 ---
 name: undercurrent-analytics-grafana-dashboards
-description: Create, edit or delete usage analytics dashboards at https://grafana.undercurrentanalytics.dev. Use when asked to build, update, or delete dashboards/panels for Grafana or Undercurrent Analytics, or query usage analytics data in SQL.
+description: Create, edit or delete usage analytics dashboards at https://grafana.undercurrentanalytics.dev. Use when asked to build, update, or delete dashboards/panels for Grafana or Undercurrent Analytics, or query usage analytics data in SQL that is stored by Undercurrent Analytics.
 ---
 
 Undercurrent Analytics is a mobile analytics service that uses Grafana for
