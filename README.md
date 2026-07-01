@@ -7,7 +7,8 @@ Analytics projects.
 
 In Claude Code:
 ```
-/plugin marketplace add https://github.com/undercurrentanalytics-dev/skills
+/plugin marketplace add undercurrentanalytics-dev/skills
+/plugin install undercurrent-analytics-grafana-dashboards@undercurrent-analytics-skills
 /reload-plugins
 ```
 
